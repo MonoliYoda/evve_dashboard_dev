@@ -1,0 +1,100 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Brand Logo -->
+  <a href="#" class="brand-link">
+    <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+         style="opacity: .8">
+    <span class="brand-text font-weight-light">EVE Dashboard</span>
+  </a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img src="https://images.evetech.net/Character/{{ char_id }}_128.jpg" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        <a href="#" class="d-block">{{ name }}</a>
+      </div>
+    </div>
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Add icons to the links using the .nav-icon class
+             with font-awesome or any other icon font library -->
+        <li class="nav-item">
+          <a href="/index" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              Dashboard
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/calendar" class="nav-link">
+            <i class="nav-icon far fa-calendar-alt"></i>
+            <p>
+              Calendar
+              <span class="badge badge-info right" id="cal-events">0</span>
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/contracts" class="nav-link">
+            <i class="nav-icon fas fa-book"></i>
+            <p>
+              Contracts
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/market" class="nav-link">
+            <i class="nav-icon fas fa-poll-h"></i>
+            <p>
+              Market Orders
+            </p>
+          </a>
+        </li>
+        <!--
+        <li class="nav-item">
+          <a href="/discord" class="nav-link">
+            <img src="https://discord.com/assets/28174a34e77bb5e5310ced9f95cb480b.png" width="28" height="28">
+            <p>
+              Discord Bot
+            </p>
+          </a>
+        </li>
+        -->
+        <li class="nav-item">
+          <a href="/sso/logout" class="nav-link">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>
+              Log Out
+            </p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>{{ page_name }}</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">{{ page_name }}</li>
+          </ol>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>

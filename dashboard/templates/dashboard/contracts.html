@@ -1,0 +1,170 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-primary">
+                        <div class="card-header p-0 pt-1">
+                              <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                                <li class="nav-item">
+                                  <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#table-corp" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Corp Contracts</a>
+                                </li>
+                                <li class="nav-item">
+                                  <a class="nav-link" id="custom-tabs-one-home-tab" data-toggle="pill" href="#table-my" role="tab" aria-controls="custom-tabs-one-home" aria-selected="false">My Contracts</a>
+                                </li>
+                              </ul>
+                        </div>
+                        <!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content p-0">
+                <div class="chart tab-pane active" id="table-corp"
+                  style="position: relative;">
+                <table id="contractstable" class="table table-bordered table-striped" data-page-length='25'>
+                  <thead>
+                  <tr>
+                    <th style="width: 10%">Open In Game</th>
+                    <th style="width: 10%">Price</th>
+                    <th style="width: 40%">Name</th>
+                    <th style="width: 20%">Issuer</th>
+                    <th style="width: 10%">Type</th>
+                    <th style="width: 5%">Available</th>
+                    <th style="width: 5%">Bids</th>
+                  </tr>
+                  </thead>
+                  </table>
+              </div>
+              <div class="chart tab-pane" id="table-my" style="position: relative;">
+                <table id="mycontracts" class="table table-bordered table-striped" data-page-length='25'>
+                  <thead>
+                  <tr>
+                    <th style="width: 10%">Open In Game</th>
+                    <th style="width: 10%">Price</th>
+                    <th style="width: 40%">Name</th>
+                    <th style="width: 20%">Status</th>
+                    <th style="width: 10%">Type</th>
+                    <th style="width: 5%">Available</th>
+                    <th style="width: 5%">Bids</th>
+                  </tr>
+                  </thead>
+                  </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+          </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock content %}
+
+  {% block end %}
+<!-- DataTables -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- page script -->
+<script>
+$(document).ready(function (){
+    $.ajax({
+      url: '/ajax/calendar_events?user_id={{ char_id }}',
+      type: "get",
+      dataType: 'html',
+      success: function(result){
+        $('#cal-events').html(result);
+      },
+   });
+});
+</script>
+<script>
+  $(function () {
+    $('#contractstable').DataTable({
+      "lengthChange": false,
+      "autoWidth": false,
+      "responsive": true,
+      "ajax": "/ajax/getcorpcontracts?user_id={{ char_id }}",
+      "columnDefs": [
+        {"targets": 0,
+          "data": "contract_id",
+        "render": function ( data ) {
+          return '<button type="button" onclick=openIngame('+data[0]+') class="btn btn-block btn-info btn-sm">Open Ingame</button>';
+          }
+        },
+        {"targets": 1,
+        "data": "price"},
+        {"targets": 2,
+        "data": "title"},
+        {"targets": 3,
+        "data": "issuer"},
+        {"targets": 4,
+        "data": "type"},
+        {"targets": 5,
+        "data": "count"},
+        {"targets": 6,
+        "data": "bids"}
+      ]
+    });
+  });
+</script>
+<script>
+  $(function () {
+    $('#mycontracts').DataTable({
+      "lengthChange": false,
+      "autoWidth": false,
+      "responsive": true,
+      "ajax": "/ajax/getusercontracts?user_id={{ char_id }}",
+      "columnDefs": [
+        {"targets": 0,
+          "data": "contract_id",
+        "render": function ( data ) {
+          return '<button type="button" onclick=openIngame('+data[0]+') class="btn btn-block btn-info btn-sm">Open Ingame</button>';
+          }
+        },
+        {"targets": 1,
+        "data": "price",
+        className: "dt-body-right"},
+        {"targets": 2,
+        "data": "title"},
+        {"targets": 3,
+        "data": "status",
+         "render": function ( data ){
+           if (data == 'outstanding'){
+             return '<a class="bg-warning">Outstanding</a>'
+           }
+           else {
+              return '<a class="bg-success">Finished</a>'
+           }
+         }
+        },
+        {"targets": 4,
+        "data": "type"},
+        {"targets": 5,
+        "data": "count"},
+        {"targets": 6,
+        "data": "bids"}
+      ]
+    });
+  });
+</script>
+<script>
+function openIngame(id){
+    jQuery.ajax({
+      type: "POST",
+      url: "https://esi.evetech.net/latest/ui/openwindow/contract/?contract_id="+id+"&datasource=tranquility&token={{ atoken }}",
+      cache: false,
+    });
+ }
+</script>
+</body>
+</html>
+{% endblock end %}

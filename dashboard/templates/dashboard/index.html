@@ -1,0 +1,538 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% block content %}
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3 id="wallet-balance">- ISK</h3>
+            <p>Wallet Balance</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-cash"></i>
+          </div>
+          <a href="#" class="small-box-footer"><i class="fas fa-remove"></i></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-2 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3 id="24htransactions">-</h3>
+            <p>Transactions in last 24h</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-shuffle"></i>
+          </div>
+          <a href="#" class="small-box-footer"><i class="fas fa-remove"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-2 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3 id="active-orders">-</h3>
+            <p>Active market orders</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-shuffle"></i>
+          </div>
+          <a href="/market" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3 id="contract-count">-</h3>
+            <p>Corp contracts available</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-document"></i>
+          </div>
+          <a href="/contracts" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+    </div>
+    <!-- /.row -->
+    <!-- Main row -->
+    <div class="row">
+      <!-- Left col -->
+      <section class="col-lg-7">
+        <!-- Custom tabs (Charts with tabs)-->
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-clock mr-1"></i>
+              Corp Timerboard
+            </h3>
+            <div class="card-tools">
+              <button type="button" style="float: right;" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
+                Add New Timer
+              </button>
+              <button type="button" id="reloadTimerTable" style="display: none;">Refresh</button>
+              <button type="button" id="remakeTimers" style="display: none;">Refresh</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <table id="timerboard" class="table table-bordered table-striped" data-page-length='25'>
+              <thead>
+                <tr>
+                  <th style="width: 10%">
+                    Location
+                  </th>
+                  <th style="width: 15%">
+                    Name
+                  </th>
+                  <th style="width: 10%">
+                    Type
+                  </th>
+                  <th style="width: 5%">
+                    Structure
+                  </th>
+                  <th style="width: 15%">
+                    Time
+                  </th>
+                  <th style="width: 15%">
+                    Notes
+                  </th>
+                  <th style="width: 5%">
+                    Del
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+        <div class="card card-warning">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-chart-line mr-1"></i>
+              Wallet Balance 30-day History
+            </h3>
+            <div class="card-tools">
+
+            </div>
+          </div><!-- /.card-header -->
+          <div class="card-body">
+            <div class="tab-content p-0">
+              <canvas id="wallet-history">
+              </canvas>
+            </div>
+          </div><!-- /.card-body -->
+        </div>
+
+
+        <!-- /.card -->
+      </section>
+      <!-- /.Left col -->
+      <!-- right col (We are only adding the ID to make the widgets sortable)-->
+      <section class="col-lg-5">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-globe-asia mr-1"></i> Planet Status</h3>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body p-0">
+            <table id="planetstable" class="table table-striped projects">
+              <thead>
+                <tr>
+                  <th style="width: 30%">
+                    Planet Name
+                  </th>
+                  <th style="width: 70%">
+                    Extractor progress
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for planet in planets %}
+                <tr>
+                  {% if planet.health == 'good' %}
+                  <td class="bg-success">
+                    {% else %}
+                    <td class="bg-danger">
+                      {% endif %}
+                      <a>
+                        {{ planet.name }}: {{ planet.planet_type }}
+                      </a>
+                      <br>
+                      <small>
+                        Last update: <br>{{ planet.last_update }}
+                      </small>
+                    </td>
+                    <td>
+                      {% if not planet.extractors %}
+                      <large>
+                        No exctractors.
+                      </large>
+                      {% endif %}
+                      {% for extractor in planet.extractors %}
+                      Start time: {{ extractor.install_time }}
+                      <div class="progress progress-sm">
+                        <div
+                        {% if extractor.completion > 75 %}
+                        {% if extractor.completion > 99 %}
+                        class="progress-bar bg-red"
+                        {% else %}
+                        class="progress-bar bg-yellow"
+                        {% endif %}
+                        {% else %}
+                        class="progress-bar bg-green"
+                        {% endif %}
+                        role="progressbar" aria-volumenow="{{ extractor.completion }}" aria-volumemin="0" aria-volumemax="100" style="width: {{ extractor.completion }}%">
+                      </div>
+                    </div>
+                    <small>
+                      {{ extractor.completion }}% Complete
+                    </small>
+                    <br>
+                    {% endfor %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+
+        <!-- /.card -->
+
+      </section>
+      <!-- right col -->
+    </div>
+    <!-- /.row (main row) -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+{% endblock content %}
+
+{% block end %}
+
+<script>
+$.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<div class="modal fade" id="modal-default" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Ass New Timer to Board</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form role="form" id="newTimerForm">
+          <div class="card-body">
+            <div class="form-group">
+              <label for="inputDscan">D-Scan (Paste Here)</label>
+              <input type="text" name="inputDscan" class="form-control" id="inputDscan" placeholder="Item ID   Jxxxxxx - Name   Type   Range">
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="input">Time left</label>
+                  <input type="text" name="inputTimeleft" class="form-control" id="inputTimeleft" placeholder="1D HH:MM:SS">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Timer type</label>
+                  <select name="inputTimertype" class="form-control" id="inputTimertype">
+                    <option>Armor</option>
+                    <option>Structure</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="input">Notes</label>
+                  <input type="text" name="inputNotes" class="form-control" id="inputNotes" placeholder="Text...">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </form>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="postNewTimer()" data-dismiss="modal">Save changes</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- ChartJS -->
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<!-- Sparkline -->
+<script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+<!-- daterangepicker -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Summernote -->
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+
+
+<script>
+$(document).ready(function (){
+  $.ajax({
+    url: '/ajax/getactiveorders?user_id={{ char_id }}',
+    type: "get",
+    dataType: 'html',
+    success: function(result){
+      $('#active-orders').html(result);
+    },
+  });
+});
+</script>
+<script>
+$(document).ready(function (){
+  $.ajax({
+    url: '/ajax/contract_count?user_id={{ char_id }}',
+    type: "get",
+    dataType: 'html',
+    success: function(result){
+      $('#contract-count').html(result);
+    },
+  });
+});
+</script>
+<script>
+$(document).ready(function (){
+  $.ajax({
+    url: '/ajax/getwalletbalance?user_id={{ char_id }}',
+    type: "get",
+    dataType: 'html',
+    success: function(result){
+      $('#wallet-balance').html(result + " ISK");
+    },
+  });
+});
+</script>
+<script>
+$(document).ready(function (){
+  $.ajax({
+    url: '/ajax/get24htransactions?user_id={{ char_id }}',
+    type: "get",
+    dataType: 'html',
+    success: function(result){
+      $('#24htransactions').html(result);
+    },
+  });
+});
+</script>
+<script>
+$(function () {
+  var timertable = $('#timerboard').DataTable({
+    "ajax": "/ajax/gettimers?user_id={{ char_id }}",
+    paging: false,
+    searching: false,
+    "columnDefs": [
+      {
+        "targets": 0,
+        "render": function ( data ) {
+          return '<a target="_blank" href="http://anoik.is/systems/'+data+'">'+data+'</a>'
+        }
+      },
+      {
+        "targets": 1
+      },
+      {
+        "targets": 2
+      },
+      {
+        "targets": 3
+      },
+      {
+        "targets": 4,
+        "render": function ( data ) {
+          var id = Math.random() * (9999 - 1000) + 1000;
+          var dateString = (new Date(data)).toISOString().substring(0, 16).replace("T", " ")
+          return '<a class="cntdwn" id="'+id+'\t'+data+'"></a><br><a>'+dateString+'</a>';
+        }
+      },
+      {
+        "targets": 5,
+      },
+      {
+        "targets": 6,
+        "render": function ( data ) {
+          return '<button type="button" onclick="postDelTimer(&quot;'+data+'&quot;)" class="btn btn-block btn-danger"><i class="fas fa-minus-square mr-1"></i></button>';
+        }
+      }
+    ]
+  });
+
+  $('#reloadTimerTable').on('click', function(){
+    timertable.ajax.reload();
+    $('#remakeTimers').click();
+  })
+});
+
+function postNewTimer(){
+  var dscan = $("#inputDscan").val();
+  var timeleft = $("#inputTimeleft").val();
+  var timertype = $("#inputTimertype").val();
+  var notes = $("#inputNotes").val();
+
+  var SendInfo = {
+    inputDscan: dscan,
+    inputTimeleft: timeleft,
+    timer_type: timertype,
+    inputNotes: notes
+  };
+  $.ajax({
+    type: 'post',
+    url: '/ajax/newtimer?user_id={{ char_id }}',
+    dataType: "json",
+    data: JSON.stringify(SendInfo),
+    contentType: "application/json; charset=utf-8",
+    traditional: true,
+  });
+  $('#reloadTimerTable').click();
+}
+</script>
+<script>
+function postDelTimer(structureName){
+  var SendInfo = {
+    sName: structureName,
+  };
+  $.ajax({
+    type: 'post',
+    url: '/ajax/removetimer?user_id={{ char_id }}',
+    dataType: "json",
+    data: JSON.stringify(SendInfo),
+    contentType: "application/json; charset=utf-8",
+    traditional: true,
+  });
+  $('#reloadTimerTable').click();
+}
+</script>
+
+<!-- overlayScrollbars -->
+<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<script>
+$(function () {
+  var ctx = document.getElementById('wallet-history');
+  var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Wallet Balance (Million ISK)',
+        data: [],
+        backgroundColor: [
+          'rgba(64, 159, 255, 0.2)'
+        ],
+        borderColor: [
+          'rgba(64, 159, 255, 1)'
+        ],
+        borderWidth: 3,
+        lineTension: 0.2
+      }]
+    },
+    options: {
+      animation: {
+        duration: 1000
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+  ajax_chart(myChart, '/ajax/getwalletjournal?user_id={{ char_id }}');
+
+  // function to update chart with AJAX data:
+
+  function ajax_chart(chart, url, data) {
+    var data = data || {};
+
+    $.getJSON(url, data).done(function(response) {
+      chart.data.labels = response.labels;
+      chart.data.datasets[0].data = response.data;
+      chart.update();
+    });
+  }
+});
+</script>
+<script>
+$(function () {
+  function createCountDown(elementId, date) {
+    // Set the date we're counting down to
+    var countDownDate = new Date(date).getTime();
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+      // Get todays date and time
+      var now = new Date().getTime();
+      // Find the distance between now an the count down date
+      var distance = countDownDate - now;
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      // Display the result in the element with id="demo"
+      document.getElementById(elementId).innerHTML = days + "d " + hours + "h "
+      + minutes + "m " + seconds + "s ";
+
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById(elementId).innerHTML = "EXPIRED";
+      }
+    }, 1000);
+  }
+  $(document).ready(function(){
+    function createTimers(){
+      var elements = document.getElementsByClassName("cntdwn");
+      if (elements.length) {
+        var names = [];
+        for(var i=0; i<elements.length; i++) {
+
+          names = elements[i].id.split("\t");
+          createCountDown(elements[i].id, names[1]);
+          names = [];
+        }
+      } else {
+        setTimeout(createTimers, 1000);
+      }
+    }
+
+    createTimers();
+    $('#remakeTimers').on('click', function(){
+      setTimeout(createTimers, 1000);
+    });
+  });
+
+});
+</script>
+</body>
+</html>
+{% endblock end %}
