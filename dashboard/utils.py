@@ -2,12 +2,13 @@ from esi.clients import EsiClientProvider
 from esi.models import Token
 from eve_dashboard import settings
 from dashboard.models import LocationName, CharacterName, ContractShipName
-from dashboard.models import StructureTimer, PlanetName
+from dashboard.models import StructureTimer, PlanetName, ContractBids
 from datetime import datetime, timedelta
 import pytz
 import logging
 import time
 import json
+import random
 
 esi = EsiClientProvider()
 
@@ -177,18 +178,51 @@ def get_contracts(user_token, type):
             contract['type'] = 'Item exchange'
         if contract['type'] == 'auction':
             bids = []
-            if type == 'corp':
-                bids = esi.client.Contracts.get_corporations_corporation_id_contracts_contract_id_bids(
-                    corporation_id=corp_id,
+            time_offset = timedelta(minutes=random.randint(60, 180))
+            db_bids = ContractBids.objects.filter(
+                contract_id=contract['contract_id']).first()
+            if db_bids is not None:  # Have we stored the bids before?
+                if (db_bids.last_updated + time_offset) > datetime.utcnow().replace(tzinfo=pytz.utc):
+                    bids = json.loads(db_bids.bids)
+                else:  # Due for an update
+                    if type == 'corp':
+                        bids = esi.client.Contracts.get_corporations_corporation_id_contracts_contract_id_bids(
+                            corporation_id=corp_id,
+                            contract_id=contract['contract_id'],
+                            token=user_token.valid_access_token()
+                        ).results()
+                    elif type == 'character':
+                        bids = esi.client.Contracts.get_characters_character_id_contracts_contract_id_bids(
+                            character_id=user_token.character_id,
+                            contract_id=contract['contract_id'],
+                            token=user_token.valid_access_token()
+                        ).results()
+                    for bid in bids:
+                        bid['date_bid'] = bid['date_bid'].isoformat()
+                    db_bids.bids = json.dumps(bids)
+                    db_bids.last_updated = datetime.utcnow().replace(tzinfo=pytz.utc)
+                    db_bids.save()
+            else:  # Is null; we have never stored bids for this
+                if type == 'corp':
+                    bids = esi.client.Contracts.get_corporations_corporation_id_contracts_contract_id_bids(
+                        corporation_id=corp_id,
+                        contract_id=contract['contract_id'],
+                        token=user_token.valid_access_token()
+                    ).results()
+                elif type == 'character':
+                    bids = esi.client.Contracts.get_characters_character_id_contracts_contract_id_bids(
+                        character_id=user_token.character_id,
+                        contract_id=contract['contract_id'],
+                        token=user_token.valid_access_token()
+                    ).results()
+                for bid in bids:
+                    bid['date_bid'] = bid['date_bid'].isoformat()
+                print(bids)
+                ContractBids(
                     contract_id=contract['contract_id'],
-                    token=user_token.valid_access_token()
-                ).results()
-            elif type == 'character':
-                bids = esi.client.Contracts.get_characters_character_id_contracts_contract_id_bids(
-                    character_id=user_token.character_id,
-                    contract_id=contract['contract_id'],
-                    token=user_token.valid_access_token()
-                ).results()
+                    bids=json.dumps(bids),
+                    last_updated=datetime.utcnow().replace(tzinfo=pytz.utc)
+                ).save()  # Create new entry in cache DB
             if bids != []:
                 contract['price'] = bids[0]['amount']
                 contract['bids'] = len(bids)

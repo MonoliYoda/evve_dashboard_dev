@@ -300,7 +300,7 @@
 <script>
 $(document).ready(function (){
   $.ajax({
-    url: '/ajax/event_count',
+    url: '/ajax/event_count?user_id={{ char_id }}',
     type: "get",
     dataType: 'html',
     success: function(result){

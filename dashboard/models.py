@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 class LocationName(models.Model):
@@ -32,3 +33,9 @@ class StructureTimer(models.Model):
 class PlanetName(models.Model):
     planet_id = models.IntegerField()
     planet_name = models.CharField(max_length=100)
+
+
+class ContractBids(models.Model):
+    contract_id = models.IntegerField()
+    bids = models.TextField(null=True)
+    last_updated = models.DateTimeField(default=datetime.now)

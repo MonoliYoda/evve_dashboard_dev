@@ -15,6 +15,8 @@ from dashboard.utils import get_user_planets, get_contracts, logger, prepare_vie
 import time
 import json
 import pytz
+import string
+import random
 
 esi = EsiClientProvider()
 logs = logging.getLogger(__name__)
@@ -48,14 +50,26 @@ def receive_callback(request):
     )
     token = Token.objects.create_from_request(request)
     if not request.user.is_authenticated:
-        first_name, last_name = token.character_name.split(' ', 1)
+        try:
+            first_name, last_name = token.character_name.split(' ', 1)
+        except ValueError:
+            first_name = token.character_name
+            last_name = ''
         char_id = token.character_id
-        user = authenticate(username=char_id, password='')
+        print('Attempting to auth user ID: {}'.format(char_id))
+        # user = authenticate(username=char_id, password='')
+        user = User.objects.filter(
+            username=char_id
+        ).first()
         if user is not None:
+            print('User {} auth success.'.format(token.character_name))
             login(request, user)
         else:
+            print('User {} auth failure. Creating new user.'.format(token.character_name))
+            letters = string.ascii_lowercase
             user = User.objects.create_user(
                 username=char_id,
+                password=''.join(random.choice(letters) for i in range(32)),
                 first_name=first_name,
                 last_name=last_name
             )
