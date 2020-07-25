@@ -185,7 +185,6 @@ def ajax_get_timers(request, tokens):
     return JsonResponse({'data': timers_list})
 
 
-@csrf_exempt
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
 def ajax_new_timer(request, tokens):
     active_token, char_name, char_id = prepare_view(request, tokens)
@@ -253,7 +252,6 @@ def ajax_new_timer(request, tokens):
     return JsonResponse({'status': 'success'})
 
 
-@csrf_exempt
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
 def ajax_remove_timer(request, tokens):
     active_token, char_name, char_id = prepare_view(request, tokens)
