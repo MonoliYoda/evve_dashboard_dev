@@ -176,15 +176,11 @@ def ajax_get_timers(request, tokens):
         'json', StructureTimer.objects.filter(timer_corp=corporation_id).all())
     timers_list = []
     for timer in json.loads(timer_boards_corp):
-        print('-----')
-        print(timer)
-        print('-----')
-        print(type(timer['fields']))
         fields = timer['fields']
         timers_list.append([fields['location'],
                             fields['structure_name'],
                             fields['timer_type'],
-                            fields['timer_type'], fields['time'],
+                            fields['structure_type_name'], fields['time'],
                             fields['notes'], fields['tid']])
     return JsonResponse({'data': timers_list})
 
