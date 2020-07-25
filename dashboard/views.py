@@ -1,6 +1,8 @@
 import logging
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.serializers import serialize
 from eve_dashboard import settings
 from esi.decorators import tokens_required
 from esi.clients import EsiClientProvider
@@ -8,8 +10,9 @@ from dashboard.models import LocationName, CharacterName, ContractShipName
 from dashboard.models import StructureTimer, PlanetName
 from datetime import datetime, timedelta
 from dashboard.utils import get_user_planets, get_contracts, logger, prepare_view, resolve_loc_names, get_name_by_id
-import time
+from pytimeparse.timeparse import timeparse
 import json
+import time
 import pytz
 import random
 
@@ -165,35 +168,31 @@ def calendar(request, tokens):
 
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
 def ajax_get_timers(request, tokens):
-    start_time = time.time()
     active_token, char_name, char_id = prepare_view(request, tokens)
     corporation_id = esi.client.Character.get_characters_character_id(
         character_id=char_id
     ).result()['corporation_id']
-    try:
-        with open('timer_boards_corp.json', 'r') as jsonfile:
-            timer_boards_corp = json.load(jsonfile)
-    except Exception as e:
-        print('Error reading timers from file: {}'.format(e))
+    timer_boards_corp = serialize(
+        'json', StructureTimer.objects.filter(timer_corp=corporation_id).all())
     timers_list = []
-    if str(corporation_id) in timer_boards_corp.keys():
-        for timer in timer_boards_corp[str(corporation_id)]:
-            timers_list.append([timer['location'], timer['name'],
-                                timer['timer_type'],
-                                timer['type'], timer['time'] + 'Z',
-                                timer['notes'], timer['name']])
+    for timer in json.loads(timer_boards_corp):
+        fields = timer['fields']
+        timers_list.append([fields['location'],
+                            fields['structure_name'],
+                            fields['timer_type'],
+                            fields['structure_type_name'], fields['time'],
+                            fields['notes'], fields['tid']])
     return JsonResponse({'data': timers_list})
 
 
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
 def ajax_new_timer(request, tokens):
-    start_time = time.time()
     active_token, char_name, char_id = prepare_view(request, tokens)
     logger('User {} added a new timer.'
            .format(char_name),
            'info', 'stats')
-    print('Data: {}'.format(json.loads(request.data)))
-    data = json.loads(request.data)
+    print('Data: {}'.format(request.body))
+    data = json.loads(request.body)
     logger(str(data), 'info', 'stats')
     # return JsonResponse({'status': 'debug return'})
     try:
@@ -247,7 +246,7 @@ def ajax_new_timer(request, tokens):
         structure_type_name=type,
         structure_name=name,
         structure_corp=0,
-        time=(datetime.utcnow() + time_left).isoformat(),
+        time=(datetime.utcnow() + time_left).replace(tzinfo=pytz.UTC).isoformat(),
         notes=timer_notes
     ).save()
     return JsonResponse({'status': 'success'})
@@ -255,39 +254,25 @@ def ajax_new_timer(request, tokens):
 
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
 def ajax_remove_timer(request, tokens):
-    start_time = time.time()
     active_token, char_name, char_id = prepare_view(request, tokens)
     logger('User {} is removing a timer.'
            .format(char_name),
            'info', 'stats')
-    data = json.loads(request.data)
+    data = json.loads(request.body)
     logger(str(data), 'info', 'stats')
     corporation_id = esi.client.Character.get_characters_character_id(
         character_id=char_id
     ).result()['corporation_id']
-    if str(corporation_id) in timer_boards_corp.keys():
-        corp_contracts = timer_boards_corp[str(corporation_id)]
-        for i in range(len(corp_contracts)):
-            try:
-                if data['sName'] == corp_contracts[i]['name']:
-                    del corp_contracts[i]
-                    timer_boards_corp[str(corporation_id)] = corp_contracts
-                    with open('timer_boards_corp.json', 'w') as jsonfile:
-                        json.dump(timer_boards_corp, jsonfile,
-                                  ensure_ascii=False, indent=4)
-                    return JsonResponse({'status': 'success'})
-            except Exception as e:
-                logger('Failed parsing Structure name: {}'.format(data),
-                       'error', 'error')
-                logger(str(e), 'error', 'error')
-                return JsonResponse({'status': 'error: sName'})
+    timer = StructureTimer.objects.filter(timer_corp=corporation_id, tid=data['tid']).all()
+    if timer is not None:
+        timer.delete()
+        return JsonResponse({'status': 'success'})
     else:
         return JsonResponse({'status': 'not found'})
 
 
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
 def ajax_get_corp_contracts(request, tokens):
-    start_time = time.time()
     active_token, char_name, char_id = prepare_view(request, tokens)
     acc_token = active_token.valid_access_token()
     avail_contracts = get_contracts(active_token, 'corp')

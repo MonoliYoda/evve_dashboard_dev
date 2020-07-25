@@ -1,5 +1,6 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
+
 {% block content %}
 <!-- Main content -->
 <section class="content">
@@ -215,7 +216,6 @@
 {% endblock content %}
 
 {% block end %}
-
 <script>
 $.widget.bridge('uibutton', $.ui.button)
 </script>
@@ -225,7 +225,7 @@ $.widget.bridge('uibutton', $.ui.button)
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Ass New Timer to Board</h4>
+        <h4 class="modal-title">Add New Timer to Board</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -392,6 +392,24 @@ $(function () {
   })
 });
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
 function postNewTimer(){
   var dscan = $("#inputDscan").val();
   var timeleft = $("#inputTimeleft").val();
@@ -411,14 +429,19 @@ function postNewTimer(){
     data: JSON.stringify(SendInfo),
     contentType: "application/json; charset=utf-8",
     traditional: true,
+    headers: {
+      "X-CSRFToken": csrftoken,
+    },
+    complete: function() {
+          document.location.reload()
+    },
   });
-  $('#reloadTimerTable').click();
 }
 </script>
 <script>
-function postDelTimer(structureName){
+function postDelTimer(tid){
   var SendInfo = {
-    sName: structureName,
+    tid: tid,
   };
   $.ajax({
     type: 'post',
@@ -427,8 +450,13 @@ function postDelTimer(structureName){
     data: JSON.stringify(SendInfo),
     contentType: "application/json; charset=utf-8",
     traditional: true,
+    headers: {
+      "X-CSRFToken": csrftoken,
+    },
+    complete: function() {
+          document.location.reload()
+    },
   });
-  $('#reloadTimerTable').click();
 }
 </script>
 
