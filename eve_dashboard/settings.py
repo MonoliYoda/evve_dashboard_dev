@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from . import esi_secrets
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -91,8 +92,8 @@ SOCIALACCOUNT_PROVIDERS = {
 LOG_FILE_ERROR = "error.log"
 LOG_FILE_STATS = "stats.log"
 
-ESI_SSO_CLIENT_ID = ""
-ESI_SSO_CLIENT_SECRET = ""
+ESI_SSO_CLIENT_ID = esi_secrets.ESI_SSO_CLIENT_ID
+ESI_SSO_CLIENT_SECRET = esi_secrets.ESI_SSO_CLIENT_SECRET
 ESI_SSO_CALLBACK_URL = "http://localhost:8000/sso/callback"
 ESI_SSO_SCOPES = [
     'esi-calendar.read_calendar_events.v1',
