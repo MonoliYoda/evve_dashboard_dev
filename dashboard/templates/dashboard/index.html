@@ -1,5 +1,6 @@
 {% extends "dashboard/base.html" %}
 {% load static %}
+
 {% block content %}
 <!-- Main content -->
 <section class="content">
@@ -215,7 +216,6 @@
 {% endblock content %}
 
 {% block end %}
-
 <script>
 $.widget.bridge('uibutton', $.ui.button)
 </script>
@@ -412,13 +412,13 @@ function postNewTimer(){
     contentType: "application/json; charset=utf-8",
     traditional: true,
   });
-  $('#reloadTimerTable').click();
+  location.reload();
 }
 </script>
 <script>
-function postDelTimer(structureName){
+function postDelTimer(tid){
   var SendInfo = {
-    sName: structureName,
+    tid: tid,
   };
   $.ajax({
     type: 'post',
@@ -428,7 +428,7 @@ function postDelTimer(structureName){
     contentType: "application/json; charset=utf-8",
     traditional: true,
   });
-  $('#reloadTimerTable').click();
+  location.reload();
 }
 </script>
 
