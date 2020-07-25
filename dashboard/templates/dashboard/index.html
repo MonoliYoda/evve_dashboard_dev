@@ -432,8 +432,10 @@ function postNewTimer(){
     headers: {
       "X-CSRFToken": csrftoken,
     },
+    complete: function() {
+          document.location.reload()
+    },
   });
-  location.reload();
 }
 </script>
 <script>
@@ -451,8 +453,10 @@ function postDelTimer(tid){
     headers: {
       "X-CSRFToken": csrftoken,
     },
+    complete: function() {
+          document.location.reload()
+    },
   });
-  location.reload();
 }
 </script>
 
