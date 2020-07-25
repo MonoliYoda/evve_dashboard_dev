@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from account.views import receive_callback
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('dashboard.urls')),
     path('sso/', include('esi.urls', namespace='esi')),
+    path('accounts/', include('account.urls')),
+    path('sso/callback', receive_callback, name='dashboard-callback'),
 ]

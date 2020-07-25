@@ -10,9 +10,6 @@ urlpatterns = [
     path('contracts/', views.contracts, name='dashboard-contracts'),
     path('calendar/', views.calendar, name='dashboard-calendar'),
     path('market/', views.market, name='dashboard-market'),
-    path('adduser/', views.add_user, name='dashboard-adduser'),
-    path('accounts/login/', sso_redirect,
-         {'scopes': settings.ESI_SSO_SCOPES, 'return_to': 'dashboard-index'}, name='dashboard-ssoredir'),
     path('ajax/gettimers', views.ajax_get_timers, name='dashboard-contracts'),
     path('ajax/newtimer', views.ajax_new_timer, name='dashboard-contracts'),
     path('ajax/removetimer', views.ajax_remove_timer, name='dashboard-contracts'),
@@ -27,5 +24,4 @@ urlpatterns = [
     path('ajax/contract_count', views.contract_count, name='dashboard-contracts'),
     path('ajax/get_market_active', views.get_market_active, name='dashboard-contracts'),
     path('ajax/get_market_history', views.get_market_history, name='dashboard-contracts'),
-    path('sso/callback', views.receive_callback, name='dashboard-callback'),
 ]
