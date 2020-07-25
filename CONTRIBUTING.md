@@ -16,7 +16,10 @@
 
 `python manage.py migrate`
 
-5.  Register an application at https://developers.eveonline.com/
+5.  Register an application at https://developers.eveonline.com/,
+    configure to allow API access and add ESI scopes listed
+    in `eve_dashboard/settings.py`. Set callback URL to the URL
+    listed in `eve_dashboard/settings.py`.
 
 6.  Copy `eve_dashboard/esi_secrets.py.template` to
     `eve_dashboard/esi_secrets.py` and update with your Client ID and Client
