@@ -448,6 +448,9 @@ function postDelTimer(tid){
     data: JSON.stringify(SendInfo),
     contentType: "application/json; charset=utf-8",
     traditional: true,
+    headers: {
+      "X-CSRFToken": csrftoken,
+    },
   });
   location.reload();
 }
