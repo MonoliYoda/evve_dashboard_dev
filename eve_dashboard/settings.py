@@ -21,12 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!nbjm^)zksf+3i440zr5w3b&dbykmdloy^y!c^ys#5$wrt+nbs'
+SECRET_KEY = esi_secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = esi_secrets.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = esi_secrets.ALLOWED_HOSTS
 
 # Specify the context processors as follows:
 TEMPLATES = [
@@ -94,7 +94,7 @@ LOG_FILE_STATS = "stats.log"
 
 ESI_SSO_CLIENT_ID = esi_secrets.ESI_SSO_CLIENT_ID
 ESI_SSO_CLIENT_SECRET = esi_secrets.ESI_SSO_CLIENT_SECRET
-ESI_SSO_CALLBACK_URL = "http://localhost:8000/sso/callback"
+ESI_SSO_CALLBACK_URL = esi_secrets.ESI_SSO_CALLBACK_URL
 ESI_SSO_SCOPES = [
     'esi-calendar.read_calendar_events.v1',
     'esi-wallet.read_character_wallet.v1',
