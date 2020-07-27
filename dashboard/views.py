@@ -203,7 +203,14 @@ def ajax_new_timer(request, tokens):
     except Exception as e:
         logger('Failed parsing Dscan: {}'.format(data), 'error', 'error')
         logger(str(e), 'error', 'error')
-        return JsonResponse({'status': 'error: Dscan'})
+        # Crude fallback to unknown structure on non-standard usr input
+        if data['inputDscan'] is not None:
+            loc = ''
+            name = data['inputDscan']
+            type = 'Unknown'
+            type_id = 0
+        else:
+            return JsonResponse({'status': 'error: Dscan'})
     try:
         data['timer_type']
     except Exception as e:
@@ -245,7 +252,7 @@ def ajax_new_timer(request, tokens):
         structure_type_id=type_id,
         structure_type_name=type,
         structure_name=name,
-        structure_corp=0,
+        structure_corp=0,  # TODO: add option for structure owner
         time=(datetime.utcnow() + time_left).replace(tzinfo=pytz.UTC).isoformat(),
         notes=timer_notes
     ).save()
