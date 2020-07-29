@@ -56,7 +56,6 @@ AUTHENTICATION_BACKENDS = [
 # Application definition
 # ACCOUNT_ADAPTER = 'dashboard.adapter.NoNewUsersAccountAdapter'
 INSTALLED_APPS = [
-    'dashboard.apps.DashboardConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -66,6 +65,7 @@ INSTALLED_APPS = [
     'esi',
     'eveuniverse',
     'django.contrib.admin',
+    'dashboard.apps.DashboardConfig',
 ]
 
 SITE_ID = 1
