@@ -6,6 +6,7 @@ from django.core.serializers import serialize
 from eve_dashboard import settings
 from esi.decorators import tokens_required
 from esi.clients import EsiClientProvider
+from eveuniverse.models import EveSolarSystem, EveType
 from dashboard.models import LocationName, CharacterName, ContractShipName
 from dashboard.models import StructureTimer, PlanetName
 from datetime import datetime, timedelta
@@ -194,23 +195,36 @@ def ajax_new_timer(request, tokens):
     print('Data: {}'.format(request.body))
     data = json.loads(request.body)
     logger(str(data), 'info', 'stats')
-    # return JsonResponse({'status': 'debug return'})
+    namesplit = -1
+    loc = ''
+    str_name = ''
+    str_type_name = ''
+    str_type_id = 0
     try:
-        namesplit = data['inputDscan'].split('\t')
-        loc, name = namesplit[1].split(' - ', 1)
-        type = namesplit[2]
-        type_id = namesplit[0]
+        namesplit = data['inputDscan'].split('\t', 3)
+        loc, str_name = namesplit[1].split(' - ', 1)
+        str_type_name = namesplit[2]
+        str_type_id = namesplit[0]
     except Exception as e:
         logger('Failed parsing Dscan: {}'.format(data), 'error', 'error')
         logger(str(e), 'error', 'error')
-        # Crude fallback to unknown structure on non-standard usr input
-        if data['inputDscan'] is not None:
-            loc = ''
-            name = data['inputDscan']
-            type = 'Unknown'
-            type_id = 0
-        else:
-            return JsonResponse({'status': 'error: Dscan'})
+        namesplit = data['inputDscan'].split(' ')
+        name_words = namesplit.copy()
+        print('Words: {}'.format(namesplit))
+        for item in namesplit:
+            print('Parsing word: {}'.format(item))
+            system = EveSolarSystem.objects.filter(name=item).first()
+            if system is not None:
+                print('System: {}'.format(system))
+                loc = system.name
+                name_words.remove(item)
+            type = EveType.objects.filter(name=item).first()
+            if type is not None:
+                print('Type: {}'.format(type))
+                str_type_name = type.name
+                str_type_id = type.id
+                name_words.remove(item)
+        str_name = ' '.join(name_words)
     try:
         data['timer_type']
     except Exception as e:
@@ -249,9 +263,9 @@ def ajax_new_timer(request, tokens):
         timer_corp=corporation_id,
         location=loc,
         timer_type=data['timer_type'],
-        structure_type_id=type_id,
-        structure_type_name=type,
-        structure_name=name,
+        structure_type_id=str_type_id,
+        structure_type_name=str_type_name,
+        structure_name=str_name,
         structure_corp=0,  # TODO: add option for structure owner
         time=(datetime.utcnow() + time_left).replace(tzinfo=pytz.UTC).isoformat(),
         notes=timer_notes

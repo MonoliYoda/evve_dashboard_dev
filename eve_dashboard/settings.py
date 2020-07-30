@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'esi',
+    'eveuniverse',
 ]
 
 SITE_ID = 1

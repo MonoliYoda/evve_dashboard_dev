@@ -11,6 +11,7 @@ defusedxml==0.6.0
 Django==3.0.8
 django-allauth==0.42.0
 django-esi==2.0.0
+django-eveuniverse==0.2.0a1
 future==0.18.2
 idna==2.10
 importlib-metadata==1.7.0
