@@ -25,6 +25,21 @@
 
 `python manage.py migrate`
 
-7.  Start your development server (the port number is optional; defaults to 8000)
+7.  Start redis server in a separate console
+
+`redis-server`
+
+8.  Preload EVE Universe data
+
+`python manage.py eveuniverse_load_data map`
+`python manage.py eveuniverse_load_data structures`
+`python manage.py eveuniverse_load_data ships`
+
+This will take a few minutes to complete.
+
+9.  Start the django development server (port number is optional; defaults to 8000)
 
 `python manage.py runserver 8000`
+
+10.  Go to `http://localhost:8000`
+
