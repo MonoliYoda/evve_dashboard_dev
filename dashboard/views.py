@@ -211,13 +211,13 @@ def ajax_new_timer(request, tokens):
         name_words = namesplit.copy()
         print('Words: {}'.format(namesplit))
         for item in namesplit:
-            print('Parsing word: {}'.format(item))
-            system = EveSolarSystem.objects.filter(name=item).first()
+            print('Parsing word: {}'.format(item.capitalize()))
+            system = EveSolarSystem.objects.filter(name=item.capitalize()).first()
             if system is not None:
                 print('System: {}'.format(system))
                 loc = system.name
                 name_words.remove(item)
-            type = EveType.objects.filter(name=item).first()
+            type = EveType.objects.filter(name=item.capitalize()).first()
             if type is not None:
                 print('Type: {}'.format(type))
                 str_type_name = type.name
