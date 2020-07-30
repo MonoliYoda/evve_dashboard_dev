@@ -1,7 +1,6 @@
 import logging
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.core.serializers import serialize
 from eve_dashboard import settings
 from esi.decorators import tokens_required
@@ -284,7 +283,10 @@ def ajax_remove_timer(request, tokens):
     corporation_id = esi.client.Character.get_characters_character_id(
         character_id=char_id
     ).result()['corporation_id']
-    timer = StructureTimer.objects.filter(timer_corp=corporation_id, tid=data['tid']).all()
+    timer = StructureTimer.objects.filter(
+        timer_corp=corporation_id,
+        tid=data['tid']
+    ).all()
     if timer is not None:
         timer.delete()
         return JsonResponse({'status': 'success'})
