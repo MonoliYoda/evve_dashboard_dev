@@ -235,19 +235,19 @@ $.widget.bridge('uibutton', $.ui.button)
           <div class="card-body">
             <div class="form-group">
               <label for="inputDscan">D-Scan or Text (include system name and structure type)</label>
-              <input type="text" name="inputDscan" class="form-control" id="inputDscan" required placeholder="Item ID   Jxxxxxx - Name   Type   Range" />
+              <input type="text" name="inputDscan" class="form-control" id="inputDscan" placeholder="Item ID   Jxxxxxx - Name   Type   Range" />
             </div>
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="input">Time left</label>
-                  <input type="text" name="inputTimeleft" class="form-control" id="inputTimeleft" required pattern="(?:[0-9][dD] )?(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)" placeholder="(1D) HH:MM:SS" />
+                  <input type="text" name="inputTimeleft" class="form-control" id="inputTimeleft" placeholder="(1D) HH:MM:SS" />
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
                   <label>Timer type</label>
-                  <select name="inputTimertype" class="form-control" id="inputTimertype" />
+                  <select name="inputTimertype" class="form-control" id="inputTimertype">
                     <option>Armor</option>
                     <option>Structure</option>
                   </select>
