@@ -231,17 +231,17 @@ $.widget.bridge('uibutton', $.ui.button)
         </button>
       </div>
       <div class="modal-body">
-        <form role="form" id="newTimerForm">
+        <form role="form" id="newTimerForm" style="input:invalid{border: 3px solid red} input:valid{border: 0px solid black}">
           <div class="card-body">
             <div class="form-group">
-              <label for="inputDscan">D-Scan (Paste Here)</label>
-              <input type="text" name="inputDscan" class="form-control" id="inputDscan" placeholder="Item ID   Jxxxxxx - Name   Type   Range">
+              <label for="inputDscan">D-Scan or Text (include system name and structure type)</label>
+              <input type="text" name="inputDscan" class="form-control" id="inputDscan" placeholder="Item ID   Jxxxxxx - Name   Type   Range" />
             </div>
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="input">Time left</label>
-                  <input type="text" name="inputTimeleft" class="form-control" id="inputTimeleft" placeholder="1D HH:MM:SS">
+                  <input type="text" name="inputTimeleft" class="form-control" id="inputTimeleft" placeholder="(1D) HH:MM:SS" />
                 </div>
               </div>
               <div class="col-sm-6">
@@ -259,17 +259,19 @@ $.widget.bridge('uibutton', $.ui.button)
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="input">Notes</label>
-                  <input type="text" name="inputNotes" class="form-control" id="inputNotes" placeholder="Text...">
+                  <input type="text" name="inputNotes" class="form-control" id="inputNotes" placeholder="Text..." />
                 </div>
               </div>
             </div>
           </div>
           <!-- /.card-body -->
-        </form>
-      </div>
+
+
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="postNewTimer()" data-dismiss="modal">Save changes</button>
+        <button type="button" class="btn btn-primary" onclick="postNewTimer()">Save</button>
+      </div>
+      </form>
       </div>
     </div>
     <!-- /.modal-content -->
@@ -416,6 +418,15 @@ function postNewTimer(){
   var timertype = $("#inputTimertype").val();
   var notes = $("#inputNotes").val();
 
+
+  if (!timeleft.match(/^(?:[0-9][dD] )?(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$/)) {
+    alert("Invalid time left. Acceptable format:\ndd HH:MM:SS (days are optional)\nExamples:\n1d 22:43:00\n16:12:30");
+    return false;
+  }
+  if (dscan == null || dscan == "") {
+    alert("Please input timer details. ");
+    return false;
+  }
   var SendInfo = {
     inputDscan: dscan,
     inputTimeleft: timeleft,

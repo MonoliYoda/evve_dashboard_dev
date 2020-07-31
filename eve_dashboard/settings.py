@@ -56,8 +56,6 @@ AUTHENTICATION_BACKENDS = [
 # Application definition
 # ACCOUNT_ADAPTER = 'dashboard.adapter.NoNewUsersAccountAdapter'
 INSTALLED_APPS = [
-    'dashboard.apps.DashboardConfig',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -65,29 +63,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'esi',
+    'eveuniverse',
+    'django.contrib.admin',
+    'dashboard.apps.DashboardConfig',
 ]
 
 SITE_ID = 1
 
 SOCIALACCOUNT_STORE_TOKENS = True
 LOGIN_REDIRECT_URL = "/"
-# Provider specific settings
-SOCIALACCOUNT_PROVIDERS = {
-    'eveonline': {
-        'SCOPE': [
-            'esi-calendar.read_calendar_events.v1',
-            'esi-wallet.read_character_wallet.v1',
-            'esi-universe.read_structures.v1',
-            'esi-planets.manage_planets.v1',
-            'esi-ui.open_window.v1',
-            'esi-markets.read_character_orders.v1',
-            'esi-contracts.read_character_contracts.v1',
-            'esi-contracts.read_corporation_contracts.v1'
-        ],
-        'EXCHANGE_TOKEN': True,
-        'STORE_TOKENS': True,
-    }
-}
 
 LOG_FILE_ERROR = "error.log"
 LOG_FILE_STATS = "stats.log"
@@ -139,8 +123,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'eve_dashboard.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+# Celery configuration
+BROKER_URL = 'redis://localhost:6379/0'
+
 
 DATABASES = {
     'default': {
