@@ -1,8 +1,9 @@
 from esi.clients import EsiClientProvider
 from esi.models import Token
 from eve_dashboard import settings
-from dashboard.models import LocationName, CharacterName, ContractShipName
-from dashboard.models import StructureTimer, PlanetName, ContractBids
+from dashboard.models import StructureName, CharacterName, ContractShipName
+from dashboard.models import ContractBids
+from eveuniverse.models import EveType, EveStation, EvePlanet
 from datetime import datetime, timedelta
 import pytz
 import logging
@@ -11,11 +12,6 @@ import json
 import random
 
 esi = EsiClientProvider()
-
-with open('invTypes.json', 'r') as jsonfile:
-    inv_types = json.load(jsonfile)
-with open('shipTypes.json', 'r') as jsonfile:
-    ship_types = json.load(jsonfile)
 
 
 def setup_logger(logger_name, log_file, level=logging.INFO):
@@ -85,19 +81,8 @@ def get_user_planets(user_token):
         token=user_token.valid_access_token()
     ).results()
     for planet in planet_list:
-        db_planet = PlanetName.objects.filter(
-            planet_id=planet['planet_id']
-        ).first()
-        if db_planet is None:
-            planet['name'] = esi.client.Universe.get_universe_planets_planet_id(
-                planet_id=planet['planet_id']
-            ).results()['name']
-            PlanetName(
-                planet_id=planet['planet_id'],
-                planet_name=planet['name']
-            ).save()
-        else:
-            planet['name'] = db_planet.planet_name
+        planet_obj, _ = EvePlanet.objects.get_or_create_esi(id=planet['planet_id'])
+        planet['name'] = planet_obj.name
         res = esi.client.Planetary_Interaction.get_characters_character_id_planets_planet_id(
             character_id=user_token.character_id,
             planet_id=planet['planet_id'],
@@ -247,22 +232,20 @@ def get_contracts(user_token, type):
                     token=user_token.valid_access_token()
                 ).results()
             if len(items) != 0:
+                counter = 0
                 for item in items:
+                    counter += 1
                     if (item['is_included'] and
-                            item['quantity'] == 1 and
-                            str(item['type_id']) in ship_types):
-                        # Probably a ship?
-                        ship_name = ship_types[str(item['type_id'])]['typeName']
-                        ContractShipName(
-                            contract_id=contract['contract_id'],
-                            ship_name=ship_name
-                        ).save()
-                        break
-                else:
-                    ContractShipName(
-                        contract_id=contract['contract_id'],
-                        ship_name=''
-                    ).save()
+                            item['quantity'] == 1):
+                        item_obj, _ = EveType.objects.get_or_create_esi(id=item['type_id'])
+                        if item_obj.eve_group.eve_category.id == 6:
+                            # Found a ship
+                            ship_name = item_obj.name
+                            ContractShipName(
+                                contract_id=contract['contract_id'],
+                                ship_name=ship_name
+                            ).save()
+                            break
         if ship_name != '':
             contract['title'] = '[' + ship_name + '] ' + contract['title']
         count = 0
@@ -307,70 +290,38 @@ def get_contracts(user_token, type):
     return avail_contracts
 
 
-def resolve_loc_names(order_list, user_token):
-    """Attempts to resolve names for locations of market orders.
-
-    Args:
-        order_list: A list of dicts with market orders, as received from ESI.
-
-    Returns:
-        A list of dicts containing market orders, with resolved locations into
-            'location_name'.e
+def resolve_loc_name(loc_id, user_token):
+    """Attempts to resolve name for location ID.
     """
-    if len(order_list) != 0:
-        if not isinstance(order_list, list):
-            print('Error while resolving loc names: {}'.format(order_list))
-            logger('Error while resolving loc names.', 'warning', 'error')
-            return order_list
-        for order in order_list:
-            order['name'] = get_name_by_id(order['type_id'])
-            order['price'] = '{:,.2f} ISK'.format(order['price'])
-            # Check if location_id exists in cache
-            location = LocationName.objects.filter(
-                location_id=order['location_id']).first()
-            if location is not None:
-                order['location_name'] = location.location_name
-            # if order['location_id'] in loc_cache.keys():
-            #    order['location_name'] = loc_cache[order['location_id']]
-            else:  # If not, then we have to try to find it.
-                if order['location_id'] < 1000000000:
-                    try:
-                        station = esi.client.Universe.get_universe_stations_station_id(
-                            station_id=order['location_id']
-                        ).result()
-                        order['location_name'] = station['name']
-                        LocationName(
-                            location_id=order['location_id'],
-                            location_name=station['name']
-                        ).save()
-                    except Exception as e:
-                        order['location_name'] = 'Unknown'
-                        print('Error {} at fetching station name.'.format(e))
-                        logger('Error {} fetching station name.'.format(e),
-                               'error', 'error')
-                        logger('User: {}, station ID: {}'
-                               .format(user_token.character_name,
-                                       order['location_id']), 'error', 'error')
-                else:
-                    try:
-                        structure = esi.client.Universe.get_universe_structures_structure_id(
-                            structure_id=order['location_id'],
-                            token=user_token.valid_access_token()
-                        ).result()
-                        order['location_name'] = structure['name']
-                        LocationName(
-                            location_id=order['location_id'],
-                            location_name=station['name']
-                        ).save()
-                    except Exception as e:
-                        order['location_name'] = 'Unknown'
-                        print('Error {} at fetching structure name.'.format(e))
-                        logger('Error {} fetching structure name.'.format(e),
-                               'error', 'error')
-                        logger('User: {}, structure ID: {}'
-                               .format(user_token.character_name,
-                                       order['location_id']), 'error', 'error')
-    return order_list
+    if loc_id < 1000000000:
+        station, _ = EveStation.objects.get_or_create_esi(id=loc_id)
+        return station.name
+    else:
+        # Check if location_id exists in cache
+        location = StructureName.objects.filter(
+            structure_id=loc_id).first()
+        if location is not None:
+            return location.structure_name
+        else:  # If not, then we have to try to find it.
+            try:
+                structure = esi.client.Universe.get_universe_structures_structure_id(
+                    structure_id=loc_id,
+                    token=user_token.valid_access_token()
+                ).result()
+                StructureName(
+                    structure_id=loc_id,
+                    structure_name=structure['name']
+                ).save()
+                return structure['name']
+            except Exception as e:
+                return 'Unknown'
+                print('Error {} at fetching structure name.'.format(e))
+                logger('Error {} fetching structure name.'.format(e),
+                       'error', 'error')
+                logger('User: {}, structure ID: {}'
+                       .format(user_token.character_name,
+                               loc_id), 'error', 'error')
+    return 'Error'
 
 
 def get_notifications(user_token):
@@ -386,22 +337,6 @@ def get_mails(user_token):
     unread = 0
     mails = []
     return unread, mails
-
-
-def get_name_by_id(id):
-    """Resolves typeID into item name from inv_types in EVE static DB.
-
-    Useful for retrieving the name of a ship in a contract.
-
-    Args:
-        id: Int containing the requested typeID.
-
-    Returns:
-        A string with the name of the requested item.
-    """
-    for i, dic in enumerate(inv_types):
-        if dic['typeID'] == id:
-            return dic['typeName']
 
 
 def find_token(tokens, requested_id):

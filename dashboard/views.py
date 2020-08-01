@@ -6,10 +6,9 @@ from eve_dashboard import settings
 from esi.decorators import tokens_required
 from esi.clients import EsiClientProvider
 from eveuniverse.models import EveSolarSystem, EveType
-from dashboard.models import LocationName, CharacterName, ContractShipName
-from dashboard.models import StructureTimer, PlanetName
+from dashboard.models import StructureTimer
 from datetime import datetime, timedelta
-from dashboard.utils import get_user_planets, get_contracts, logger, prepare_view, resolve_loc_names, get_name_by_id
+from dashboard.utils import get_user_planets, get_contracts, logger, prepare_view, resolve_loc_name
 from pytimeparse.timeparse import timeparse
 import json
 import time
@@ -18,9 +17,6 @@ import random
 
 esi = EsiClientProvider()
 logs = logging.getLogger(__name__)
-
-with open('timer_boards_corp.json', 'r') as jsonfile:
-    timer_boards_corp = json.load(jsonfile)
 
 
 @tokens_required(scopes=settings.ESI_SSO_SCOPES)
@@ -433,9 +429,11 @@ def get_market_active(request, tokens):
         character_id=char_id,
         token=active_token.valid_access_token()
     ).result()
-    active_orders = resolve_loc_names(active_orders, active_token)
     for order in active_orders:
-        order['name'] = get_name_by_id(order['type_id'])
+        order['location_name'] = resolve_loc_name(order['location_id'], active_token)
+        order_item, _ = EveType.objects.get_or_create_esi(id=order['type_id'])
+        order['name'] = order_item.name
+        order['price'] = '{:,.2f} ISK'.format(order['price'])
         issued = order['issued'].strftime('%Y-%m-%d %H:%M')
         order['issued'] = "".join(issued)
         if 'is_buy_order' not in order.keys():
@@ -463,11 +461,13 @@ def get_market_history(request, tokens):
         character_id=char_id,
         token=active_token.valid_access_token()
     ).results()
-    order_history = resolve_loc_names(order_history, active_token)
     for order in order_history:
         if order['duration'] == 0:
             continue
-        order['name'] = get_name_by_id(order['type_id'])
+        order['location_name'] = resolve_loc_name(order['location_id'], active_token)
+        order_item, _ = EveType.objects.get_or_create_esi(id=order['type_id'])
+        order['name'] = order_item.name
+        order['price'] = '{:,.2f} ISK'.format(order['price'])
         issued = order['issued'].strftime('%Y-%m-%d %H:%M')
         order['issued'] = "".join(issued)
         if 'is_buy_order' not in order.keys():
