@@ -29,11 +29,18 @@
 
 `redis-server`
 
-8.  Preload EVE Universe data
+8.  (Optional) Preload EVE Universe data
 
-`python manage.py eveuniverse_load_data map`
-`python manage.py eveuniverse_load_data structures`
-`python manage.py eveuniverse_load_data ships`
+    Run the Celery worker in another console window by running `celery -A eve_dashboard -l info --concurrency=1` in the main folder.
+    
+    Then load data from ESI to the sqlite3 database:
+    
+    `python manage.py eveuniverse_load_data map`
+
+    `python manage.py eveuniverse_load_data structures`
+
+    `python manage.py eveuniverse_load_data ships`
+
 
 This will take a few minutes to complete.
 
