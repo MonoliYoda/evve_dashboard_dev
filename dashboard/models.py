@@ -2,19 +2,37 @@ from django.db import models
 from datetime import datetime
 
 
-class LocationName(models.Model):
-    location_id = models.IntegerField()
-    location_name = models.CharField(max_length=100)
+class Corporation(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    ticker = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+
+class StructureName(models.Model):
+    structure_id = models.IntegerField()
+    structure_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.structure_name
 
 
 class CharacterName(models.Model):
     character_id = models.IntegerField()
     character_name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.character_name
+
 
 class ContractShipName(models.Model):
     contract_id = models.IntegerField()
     ship_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.contract_id
 
 
 class StructureTimer(models.Model):
@@ -29,10 +47,8 @@ class StructureTimer(models.Model):
     time = models.DateTimeField()
     notes = models.CharField(max_length=500)
 
-
-class PlanetName(models.Model):
-    planet_id = models.IntegerField()
-    planet_name = models.CharField(max_length=100)
+    def __str__(self):
+        return ' '.join([self.structure_name, str(self.tid)])
 
 
 class ContractBids(models.Model):
