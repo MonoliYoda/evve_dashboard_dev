@@ -24,4 +24,5 @@ urlpatterns = [
     path('ajax/contract_count', views.contract_count, name='dashboard-contracts'),
     path('ajax/get_market_active', views.get_market_active, name='dashboard-contracts'),
     path('ajax/get_market_history', views.get_market_history, name='dashboard-contracts'),
+    path('api/search_corps', views.api_search_corp, name='dashboard-searchcorp'),
 ]

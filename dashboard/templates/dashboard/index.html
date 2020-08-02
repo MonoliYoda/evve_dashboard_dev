@@ -1,9 +1,9 @@
-{% extends "dashboard/base.html" %}
-{% load static %}
+  {% extends "dashboard/base.html" %}
+  {% load static %}
 
-{% block content %}
-<!-- Main content -->
-<section class="content">
+  {% block content %}
+  <!-- Main content -->
+  <section class="content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-4 col-6">
@@ -209,20 +209,20 @@
     </div>
     <!-- /.row (main row) -->
   </div><!-- /.container-fluid -->
-</section>
-<!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-{% endblock content %}
+  </section>
+  <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock content %}
 
-{% block end %}
-<script>
-$.widget.bridge('uibutton', $.ui.button)
-</script>
-<!-- Bootstrap 4 -->
-<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<div class="modal fade" id="modal-default" style="display: none;" aria-hidden="true">
-  <div class="modal-dialog">
+  {% block end %}
+  <script>
+  $.widget.bridge('uibutton', $.ui.button)
+  </script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <div class="modal fade" id="modal-default" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Add New Timer to Board</h4>
@@ -253,7 +253,14 @@ $.widget.bridge('uibutton', $.ui.button)
                   </select>
                 </div>
               </div>
-
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group" id="owner-selection">
+                  <label>Structure Owner Corp</label><br>
+                  <select name="inputOwner" class="form-control" id="corp-search" style="width: 100%; height: 500px;"></select>
+                </div>
+              </div>
             </div>
             <div class="row">
               <div class="col-sm-12">
@@ -267,96 +274,100 @@ $.widget.bridge('uibutton', $.ui.button)
           <!-- /.card-body -->
 
 
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="postNewTimer()">Save</button>
-      </div>
-      </form>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="postNewTimer()">Save</button>
+          </div>
+        </form>
       </div>
     </div>
     <!-- /.modal-content -->
   </div>
   <!-- /.modal-dialog -->
-</div>
-<!-- ChartJS -->
-<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
-<!-- Sparkline -->
-<script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
-<!-- DataTables -->
-<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
-<!-- jQuery Knob Chart -->
-<script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
-<!-- daterangepicker -->
-<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
-<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<!-- Summernote -->
-<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+  </div>
+  <!-- ChartJS -->
+  <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+  <!-- Sparkline -->
+  <script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+  <!-- DataTables -->
+  <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+  <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+  <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+  <!-- jQuery Knob Chart -->
+  <script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+  <!-- daterangepicker -->
+  <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+  <script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+  <!-- Tempusdominus Bootstrap 4 -->
+  <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+  <!-- Summernote -->
+  <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
 
 
-<script>
-$(document).ready(function (){
-  $.ajax({
-    url: '/ajax/getactiveorders?user_id={{ char_id }}',
-    type: "get",
-    dataType: 'html',
-    success: function(result){
-      $('#active-orders').html(result);
-    },
+  <script>
+  $(document).ready(function (){
+    $.ajax({
+      url: '/ajax/getactiveorders?user_id={{ char_id }}',
+      type: "get",
+      dataType: 'html',
+      success: function(result){
+        $('#active-orders').html(result);
+      },
+    });
   });
-});
-</script>
-<script>
-$(document).ready(function (){
-  $.ajax({
-    url: '/ajax/contract_count?user_id={{ char_id }}',
-    type: "get",
-    dataType: 'html',
-    success: function(result){
-      $('#contract-count').html(result);
-    },
+  </script>
+  <script>
+  $(document).ready(function (){
+    $.ajax({
+      url: '/ajax/contract_count?user_id={{ char_id }}',
+      type: "get",
+      dataType: 'html',
+      success: function(result){
+        $('#contract-count').html(result);
+      },
+    });
   });
-});
-</script>
-<script>
-$(document).ready(function (){
-  $.ajax({
-    url: '/ajax/getwalletbalance?user_id={{ char_id }}',
-    type: "get",
-    dataType: 'html',
-    success: function(result){
-      $('#wallet-balance').html(result + " ISK");
-    },
+  </script>
+  <script>
+  $(document).ready(function (){
+    $.ajax({
+      url: '/ajax/getwalletbalance?user_id={{ char_id }}',
+      type: "get",
+      dataType: 'html',
+      success: function(result){
+        $('#wallet-balance').html(result + " ISK");
+      },
+    });
   });
-});
-</script>
-<script>
-$(document).ready(function (){
-  $.ajax({
-    url: '/ajax/get24htransactions?user_id={{ char_id }}',
-    type: "get",
-    dataType: 'html',
-    success: function(result){
-      $('#24htransactions').html(result);
-    },
+  </script>
+  <script>
+  $(document).ready(function (){
+    $.ajax({
+      url: '/ajax/get24htransactions?user_id={{ char_id }}',
+      type: "get",
+      dataType: 'html',
+      success: function(result){
+        $('#24htransactions').html(result);
+      },
+    });
   });
-});
-</script>
-<script>
-$(function () {
-  var timertable = $('#timerboard').DataTable({
-    "ajax": "/ajax/gettimers?user_id={{ char_id }}",
-    paging: false,
-    searching: false,
-    "columnDefs": [
+  </script>
+  <script>
+  $(function () {
+    var timertable = $('#timerboard').DataTable({
+      "ajax": "/ajax/gettimers?user_id={{ char_id }}",
+      paging: false,
+      searching: false,
+      "columnDefs": [
       {
         "targets": 0,
         "render": function ( data ) {
-          return '<a target="_blank" href="http://anoik.is/systems/'+data+'">'+data+'</a>'
+          var displayString = '<a target="_blank" href="http://anoik.is/systems/'+data.location+'">'+data.location+'</a><br>'
+          if (data.ownerID != 0) {
+            displayString += '<a target="_blank" href="https://zkillboard.com/corporation/'+data.ownerID+'">Owner zKill</a>'
+          }
+          return displayString
         }
       },
       {
@@ -385,193 +396,248 @@ $(function () {
           return '<button type="button" onclick="postDelTimer(&quot;'+data+'&quot;)" class="btn btn-block btn-danger"><i class="fas fa-minus-square mr-1"></i></button>';
         }
       }
-    ]
+      ]
+    });
+
+    $('#reloadTimerTable').on('click', function(){
+      timertable.ajax.reload();
+      $('#remakeTimers').click();
+    })
   });
 
-  $('#reloadTimerTable').on('click', function(){
-    timertable.ajax.reload();
-    $('#remakeTimers').click();
-  })
-});
-
-function getCookie(name) {
+  function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
         }
+      }
     }
     return cookieValue;
-}
-
-const csrftoken = getCookie('csrftoken');
-
-function postNewTimer(){
-  var dscan = $("#inputDscan").val();
-  var timeleft = $("#inputTimeleft").val();
-  var timertype = $("#inputTimertype").val();
-  var notes = $("#inputNotes").val();
-
-
-  if (!timeleft.match(/^(?:[0-9][dD] )?(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$/)) {
-    alert("Invalid time left. Acceptable format:\ndd HH:MM:SS (days are optional)\nExamples:\n1d 22:43:00\n16:12:30");
-    return false;
   }
-  if (dscan == null || dscan == "") {
-    alert("Please input timer details. ");
-    return false;
-  }
-  var SendInfo = {
-    inputDscan: dscan,
-    inputTimeleft: timeleft,
-    timer_type: timertype,
-    inputNotes: notes
-  };
-  $.ajax({
-    type: 'post',
-    url: '/ajax/newtimer?user_id={{ char_id }}',
-    dataType: "json",
-    data: JSON.stringify(SendInfo),
-    contentType: "application/json; charset=utf-8",
-    traditional: true,
-    headers: {
-      "X-CSRFToken": csrftoken,
-    },
-    complete: function() {
-          document.location.reload()
-    },
-  });
-}
-</script>
-<script>
-function postDelTimer(tid){
-  var SendInfo = {
-    tid: tid,
-  };
-  $.ajax({
-    type: 'post',
-    url: '/ajax/removetimer?user_id={{ char_id }}',
-    dataType: "json",
-    data: JSON.stringify(SendInfo),
-    contentType: "application/json; charset=utf-8",
-    traditional: true,
-    headers: {
-      "X-CSRFToken": csrftoken,
-    },
-    complete: function() {
-          document.location.reload()
-    },
-  });
-}
-</script>
 
-<!-- overlayScrollbars -->
-<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
-<script>
-$(function () {
-  var ctx = document.getElementById('wallet-history');
-  var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'Wallet Balance (Million ISK)',
-        data: [],
-        backgroundColor: [
-          'rgba(64, 159, 255, 0.2)'
-        ],
-        borderColor: [
-          'rgba(64, 159, 255, 1)'
-        ],
-        borderWidth: 3,
-        lineTension: 0.2
-      }]
-    },
-    options: {
-      animation: {
-        duration: 1000
+  const csrftoken = getCookie('csrftoken');
+
+  function postNewTimer(){
+    var dscan = $("#inputDscan").val();
+    var timeleft = $("#inputTimeleft").val();
+    var timertype = $("#inputTimertype").val();
+    var notes = $("#inputNotes").val();
+    var ownerData = $('#corp-search').val();
+    // var ownerID = 0;
+    // alert(ownerData);
+    // ownerID = $(ownerData).find('#corpID').text();
+
+
+    if (!timeleft.match(/^(?:[0-9][dD] )?(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$/)) {
+      alert("Invalid time left. Acceptable format:\ndd HH:MM:SS (days are optional)\nExamples:\n1d 22:43:00\n16:12:30");
+      return false;
+    }
+    if (dscan == null || dscan == "") {
+      alert("Please input timer details. ");
+      return false;
+    }
+    var SendInfo = {
+      inputDscan: dscan,
+      inputTimeleft: timeleft,
+      corpOwner: ownerData,
+      timer_type: timertype,
+      inputNotes: notes
+    };
+    $.ajax({
+      type: 'post',
+      url: '/ajax/newtimer?user_id={{ char_id }}',
+      dataType: "json",
+      data: JSON.stringify(SendInfo),
+      contentType: "application/json; charset=utf-8",
+      traditional: true,
+      headers: {
+        "X-CSRFToken": csrftoken,
       },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true
-          }
+      complete: function() {
+        document.location.reload()
+      },
+    });
+  }
+  </script>
+  <script>
+  function postDelTimer(tid){
+    var SendInfo = {
+      tid: tid,
+    };
+    $.ajax({
+      type: 'post',
+      url: '/ajax/removetimer?user_id={{ char_id }}',
+      dataType: "json",
+      data: JSON.stringify(SendInfo),
+      contentType: "application/json; charset=utf-8",
+      traditional: true,
+      headers: {
+        "X-CSRFToken": csrftoken,
+      },
+      complete: function() {
+        document.location.reload()
+      },
+    });
+  }
+  </script>
+
+  <!-- overlayScrollbars -->
+  <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <script>
+  $(function () {
+    var ctx = document.getElementById('wallet-history');
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Wallet Balance (Million ISK)',
+          data: [],
+          backgroundColor: [
+          'rgba(64, 159, 255, 0.2)'
+          ],
+          borderColor: [
+          'rgba(64, 159, 255, 1)'
+          ],
+          borderWidth: 3,
+          lineTension: 0.2
         }]
-      }
-    }
-  });
-  ajax_chart(myChart, '/ajax/getwalletjournal?user_id={{ char_id }}');
-
-  // function to update chart with AJAX data:
-
-  function ajax_chart(chart, url, data) {
-    var data = data || {};
-
-    $.getJSON(url, data).done(function(response) {
-      chart.data.labels = response.labels;
-      chart.data.datasets[0].data = response.data;
-      chart.update();
-    });
-  }
-});
-</script>
-<script>
-$(function () {
-  function createCountDown(elementId, date) {
-    // Set the date we're counting down to
-    var countDownDate = new Date(date).getTime();
-    // Update the count down every 1 second
-    var x = setInterval(function() {
-      // Get todays date and time
-      var now = new Date().getTime();
-      // Find the distance between now an the count down date
-      var distance = countDownDate - now;
-      // Time calculations for days, hours, minutes and seconds
-      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      // Display the result in the element with id="demo"
-      document.getElementById(elementId).innerHTML = days + "d " + hours + "h "
-      + minutes + "m " + seconds + "s ";
-
-      // If the count down is finished, write some text
-      if (distance < 0) {
-        clearInterval(x);
-        document.getElementById(elementId).innerHTML = "EXPIRED";
-      }
-    }, 1000);
-  }
-  $(document).ready(function(){
-    function createTimers(){
-      var elements = document.getElementsByClassName("cntdwn");
-      if (elements.length) {
-        var names = [];
-        for(var i=0; i<elements.length; i++) {
-
-          names = elements[i].id.split("\t");
-          createCountDown(elements[i].id, names[1]);
-          names = [];
+      },
+      options: {
+        animation: {
+          duration: 1000
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
         }
-      } else {
-        setTimeout(createTimers, 1000);
       }
-    }
-
-    createTimers();
-    $('#remakeTimers').on('click', function(){
-      setTimeout(createTimers, 1000);
     });
-  });
+    ajax_chart(myChart, '/ajax/getwalletjournal?user_id={{ char_id }}');
 
-});
-</script>
-</body>
-</html>
-{% endblock end %}
+    // function to update chart with AJAX data:
+
+    function ajax_chart(chart, url, data) {
+      var data = data || {};
+
+      $.getJSON(url, data).done(function(response) {
+        chart.data.labels = response.labels;
+        chart.data.datasets[0].data = response.data;
+        chart.update();
+      });
+    }
+  });
+  </script>
+  <script>
+  $(function () {
+    function createCountDown(elementId, date) {
+      // Set the date we're counting down to
+      var countDownDate = new Date(date).getTime();
+      // Update the count down every 1 second
+      var x = setInterval(function() {
+        // Get todays date and time
+        var now = new Date().getTime();
+        // Find the distance between now an the count down date
+        var distance = countDownDate - now;
+        // Time calculations for days, hours, minutes and seconds
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        // Display the result in the element with id="demo"
+        document.getElementById(elementId).innerHTML = days + "d " + hours + "h "
+        + minutes + "m " + seconds + "s ";
+
+        // If the count down is finished, write some text
+        if (distance < 0) {
+          clearInterval(x);
+          document.getElementById(elementId).innerHTML = "EXPIRED";
+        }
+      }, 1000);
+    }
+    $(document).ready(function(){
+      function createTimers(){
+        var elements = document.getElementsByClassName("cntdwn");
+        if (elements.length) {
+          var names = [];
+          for(var i=0; i<elements.length; i++) {
+
+            names = elements[i].id.split("\t");
+            createCountDown(elements[i].id, names[1]);
+            names = [];
+          }
+        } else {
+          setTimeout(createTimers, 1000);
+        }
+      }
+
+      createTimers();
+      $('#remakeTimers').on('click', function(){
+        setTimeout(createTimers, 1000);
+      });
+    });
+
+  });
+  </script>
+  <script>
+  $(document).ready(function(){
+    $('#corp-search').select2({
+      dropdownParent: $('#owner-selection'),
+      ajax: {
+        url: 'api/search_corps',
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            search: params.term, // search term
+          };
+        },
+        processResults: function (data, params) {
+          // parse the results into the format expected by Select2
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data, except to indicate that infinite
+          // scrolling can be used
+          return {
+            results: data.results
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Corporation',
+      escapeMarkup: function (markup) { return markup; },
+      minimumInputLength: 3,
+      templateResult: formatCorp,
+      templateSelection: formatCorpSelection
+    });
+    function formatCorp (corp) {
+      if (corp.loading) {
+        return corp.text;
+      }
+
+      var $container = $(
+      "<div class='corp-ticker'><a>" + corp.name + "</a></div>" +
+      "div id='corpID'>" + corp.id + "</div>"
+      );
+      return corp.name;
+    }
+    function formatCorpSelection (corp) {
+      var $container = $(
+      "<div class='corp-ticker'><a>" + corp.name + "</a></div>" +
+      "div name='corpID'>" + corp.id + "</div>"
+      );
+      return corp.name;
+    }
+  });
+  </script>
+  </body>
+  </html>
+  {% endblock end %}

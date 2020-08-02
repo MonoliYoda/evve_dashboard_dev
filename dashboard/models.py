@@ -2,6 +2,15 @@ from django.db import models
 from datetime import datetime
 
 
+class Corporation(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    ticker = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+
 class StructureName(models.Model):
     structure_id = models.IntegerField()
     structure_name = models.CharField(max_length=100)
@@ -39,7 +48,7 @@ class StructureTimer(models.Model):
     notes = models.CharField(max_length=500)
 
     def __str__(self):
-        return ' '.join(self.structure_name, self.tid)
+        return ' '.join([self.structure_name, str(self.tid)])
 
 
 class ContractBids(models.Model):
