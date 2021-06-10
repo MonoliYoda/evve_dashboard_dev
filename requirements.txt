@@ -8,7 +8,7 @@ celery==4.4.6
 certifi==2020.6.20
 chardet==3.0.4
 defusedxml==0.6.0
-Django==3.0.8
+Django==3.1.12
 django-allauth==0.42.0
 django-esi==2.0.0
 django-eveuniverse==0.2.0a1
